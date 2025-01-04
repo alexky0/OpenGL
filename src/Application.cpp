@@ -11,6 +11,8 @@
 
 GLFWwindow* window;
 static bool WindowInit();
+template<typename... Args>
+static void UnbindAll(Args&... objects);
 
 int main()
 {
@@ -22,7 +24,6 @@ int main()
              0.5f,  0.5f,
             -0.5f,  0.5f,
         };
-
         unsigned int indices[] = {
             0, 1, 2,
             2, 3, 0,
@@ -34,24 +35,16 @@ int main()
         layout.Push<float>(2);
         va.AddBuffer(vb, layout);
         IndexBuffer ib(indices, 6);
-
-        Shader shader("res/shaders/Basic.shader");
+        Shader shader("Resources/Shaders/Basic.shader");
         shader.Bind();
-        shader.SetUniform4f("u_color", 0.6f, 0.0f, 0.8f, 1.0f);
-        
-        va.Unbind();
-        vb.Unbind();
-        ib.Unbind();
-        shader.Unbind();
 
-        float r = 0.5f, g = 0.2f, b = 0.9f, a = 1.0f, rInc = 0.05f, gInc = 0.002f, bInc = -0.07f;
+        UnbindAll(va, vb, ib, shader);
 
         Renderer renderer;
 
         while (!glfwWindowShouldClose(window))
         {
-            if (r >= 1.0f || r <= 0.0f) rInc *= -1; if (g >= 1.0f || g <= 0.0f) gInc *= -1; if (b >= 1.0f || b <= 0.0f) bInc *= -1;
-            r += rInc; g += gInc; b += bInc;
+            renderer.Clear();
             shader.SetUniform4f("u_color", 0.6f, 0.0f, 0.8f, 1.0f);
 
             renderer.Draw(va, ib, shader);
@@ -91,4 +84,9 @@ static bool WindowInit()
         return false;
     }
     return true;
+}
+
+template<typename... Args>
+static void UnbindAll(Args&... objects) {
+    (objects.Unbind(), ...);
 }
