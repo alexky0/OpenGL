@@ -1,2 +1,2 @@
-Learning OpenGL
+Learning OpenGL \n
 Ain't going well
