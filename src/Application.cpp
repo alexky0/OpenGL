@@ -10,6 +10,9 @@
 #include "Renderer.h"
 #include "Texture.h"
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 GLFWwindow* window;
 static bool WindowInit();
 template<typename... Args>
@@ -42,6 +45,9 @@ int main()
         IndexBuffer ib(indices, 6);
         Shader shader("Resources/Shaders/Basic.shader");
         shader.Bind();
+
+        glm::mat4 projectionMatrix = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+        shader.SetUniformMat4f("u_matMVP", projectionMatrix);
 
         Texture texture("Resources/Textures/Cool.png");
         texture.Bind();
