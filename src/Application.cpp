@@ -8,6 +8,7 @@
 #include "VertexArray.h"
 #include "Shader.h"
 #include "Renderer.h"
+#include "Texture.h"
 
 GLFWwindow* window;
 static bool WindowInit();
@@ -18,11 +19,14 @@ int main()
 {
     if (!WindowInit()) return -1;
     {
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_BLEND);
+
         float positions[] = {
-            -0.5f, -0.5f,
-             0.5f, -0.5f,
-             0.5f,  0.5f,
-            -0.5f,  0.5f,
+            -0.5f, -0.5f, 0.0f, 0.0f,
+             0.5f, -0.5f, 1.0f, 0.0f,
+             0.5f,  0.5f, 1.0f, 1.0f,
+            -0.5f,  0.5f, 0.0f, 1.0f,
         };
         unsigned int indices[] = {
             0, 1, 2,
@@ -30,13 +34,18 @@ int main()
         };
 
         VertexArray va;
-        VertexBuffer vb(positions, 4 * 2 * sizeof(float));
+        VertexBuffer vb(positions, 4 * 4 * sizeof(float));
         VertexBufferLayout layout;
+        layout.Push<float>(2);
         layout.Push<float>(2);
         va.AddBuffer(vb, layout);
         IndexBuffer ib(indices, 6);
         Shader shader("Resources/Shaders/Basic.shader");
         shader.Bind();
+
+        Texture texture("Resources/Textures/Cool.png");
+        texture.Bind();
+        shader.SetUniform1i("u_texture", 0);
 
         UnbindAll(va, vb, ib, shader);
 
